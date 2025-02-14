@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Password Strength Checker</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-100 min-h-screen flex items-center justify-center">
+    <div class="bg-white p-8 rounded-lg shadow-lg max-w-md w-full">
+        <div class="text-center mb-6">
+            <i class="fas fa-lock text-4xl text-blue-600 mb-4"></i>
+            <h1 class="text-2xl font-bold text-gray-800">Password Strength Checker</h1>
+            <p class="text-gray-600 mt-2">Check how strong your password is, created by Ejaz Ahmed</p>
+        </div>
+
+        <div class="space-y-4">
+            <div class="relative">
+                <input 
+                    type="password" 
+                    id="password" 
+                    class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 pr-10"
+                    placeholder="Enter your password"
+                >
+                <button 
+                    id="togglePassword" 
+                    class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700"
+                    type="button"
+                >
+                    <i class="fas fa-eye"></i>
+                </button>
+            </div>
+
+            <button 
+                onclick="checkPassword()" 
+                class="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition duration-200 flex items-center justify-center"
+            >
+                <span>Check Strength</span>
+                <div id="spinner" class="hidden ml-2">
+                    <i class="fas fa-spinner fa-spin"></i>
+                </div>
+            </button>
+
+            <div id="result" class="hidden">
+                <div class="mb-4">
+                    <div class="flex justify-between mb-2">
+                        <span class="text-sm font-medium text-gray-700">Password Strength</span>
+                        <span id="strengthText" class="text-sm font-medium"></span>
+                    </div>
+                    <div class="h-2 bg-gray-200 rounded-full overflow-hidden">
+                        <div id="strengthBar" class="h-full transition-all duration-300"></div>
+                    </div>
+                </div>
+
+                <div id="criteriaList" class="space-y-2">
+                    <!-- Criteria items will be inserted here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const togglePassword = document.getElementById('togglePassword');
+        const password = document.getElementById('password');
+        const spinner = document.getElementById('spinner');
+        const result = document.getElementById('result');
+        const strengthBar = document.getElementById('strengthBar');
+        const strengthText = document.getElementById('strengthText');
+        const criteriaList = document.getElementById('criteriaList');
+
+        togglePassword.addEventListener('click', function () {
+            const type = password.getAttribute('type') === 'password' ? 'text' : 'password';
+            password.setAttribute('type', type);
+            this.innerHTML = type === 'password' ? '<i class="fas fa-eye"></i>' : '<i class="fas fa-eye-slash"></i>';
+        });
+
+        const strengthClasses = {
+            'Strong': 'bg-green-500 w-full',
+            'Moderate': 'bg-yellow-500 w-2/3',
+            'Weak': 'bg-red-500 w-1/3'
+        };
+
+        const strengthTextClasses = {
+            'Strong': 'text-green-600',
+            'Moderate': 'text-yellow-600',
+            'Weak': 'text-red-600'
+        };
+
+        const criteriaIcons = {
+            'length': 'text-length',
+            'digits': 'hashtag',
+            'uppercase': 'arrow-up',
+            'lowercase': 'arrow-down',
+            'special_chars': 'star'
+        };
+
+        const criteriaDescriptions = {
+            'length': 'At least 8 characters',
+            'digits': 'Contains numbers',
+            'uppercase': 'Contains uppercase letters',
+            'lowercase': 'Contains lowercase letters',
+            'special_chars': 'Contains special characters'
+        };
+
+        async function checkPassword() {
+            const passwordValue = password.value.trim();
+            
+            if (!passwordValue) {
+                alert('Please enter a password');
+                return;
+            }
+
+            try {
+                spinner.classList.remove('hidden');
+                result.classList.add('hidden');
+
+                const response = await fetch(`http://127.0.0.1:8000/api/v1/check-password/?password=${encodeURIComponent(passwordValue)}`);
+                const data = await response.json();
+
+                updateStrengthIndicator(data.strength);
+                updateCriteria(data.details);
+                result.classList.remove('hidden');
+            } catch (error) {
+                console.error('Error:', error);
+                alert('An error occurred while checking the password. Please try again.');
+            } finally {
+                spinner.classList.add('hidden');
+            }
+        }
+
+        function updateStrengthIndicator(strength) {
+            strengthBar.className = `h-full transition-all duration-300 ${strengthClasses[strength]}`;
+            strengthText.className = `text-sm font-medium ${strengthTextClasses[strength]}`;
+            strengthText.textContent = strength;
+        }
+
+        function updateCriteria(details) {
+            criteriaList.innerHTML = '';
+            
+            Object.entries(details).forEach(([criterion, met]) => {
+                const item = document.createElement('div');
+                item.className = 'flex items-center space-x-2';
+                
+                item.innerHTML = `
+                    <i class="fas fa-${criteriaIcons[criterion]} ${met ? 'text-green-500' : 'text-red-500'}"></i>
+                    <span class="text-sm ${met ? 'text-green-600' : 'text-red-600'}">${criteriaDescriptions[criterion]}</span>
+                `;
+                
+                criteriaList.appendChild(item);
+            });
+        }
+
+        // Add enter key support
+        password.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                checkPassword();
+            }
+        });
+    </script>
+</body>
+</html>
