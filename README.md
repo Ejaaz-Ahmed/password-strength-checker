@@ -1,6 +1,6 @@
 # Password Strength Checker
 
-A modern web application that checks password strength based on multiple criteria. The application provides real-time feedback on password strength with a user-friendly interface.
+A modern web application that checks password strength based on multiple criteria. The application provides real-time feedback on password strength with a user-friendly interface. It can be used as an API.
 
 ## Features
 
@@ -10,10 +10,6 @@ A modern web application that checks password strength based on multiple criteri
 - Modern, responsive UI
 - RESTful API backend
 - Cross-platform compatibility
-
-## Live Demo
-
-[Add your deployment link here]
 
 ## Screenshots
 
@@ -133,4 +129,4 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 - Font Awesome for the icons
 
 ---
-Created by Ejaz
+Created by Ejaz Ahmed
