@@ -13,7 +13,11 @@ A modern web application that checks password strength based on multiple criteri
 
 ## Screenshots
 
-[Add your application screenshots here]
+![Password Checker](https://github.com/Ejaaz-Ahmed/password-strength-checker/blob/main/images/1.jpg)
+![Password Checker](https://github.com/Ejaaz-Ahmed/password-strength-checker/blob/main/images/2.jpg)
+![Password Checker](https://github.com/Ejaaz-Ahmed/password-strength-checker/blob/main/images/3.jpg)
+![Password Checker](https://github.com/Ejaaz-Ahmed/password-strength-checker/blob/main/images/4.jpg)
+
 
 ## Technical Stack
 
